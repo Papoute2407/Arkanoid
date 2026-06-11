@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Arkanoid</title>
+        <link rel="stylesheet" href="/STATIC/CSS/game.css">
+        <link rel="stylesheet" href="/STATIC/CSS/popup.css">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="lives">❤️ : 3</div>
+            <div id="level">LEVEL : 1</div>
+            <div id="timer">⏱ 00:00</div>
+            <div id="score">⭐ : 0</div>
+            <div id="board">
+                <div id="fps-counter">FPS: 0</div>
+                <div id="active-bonuses">
+                    <div id="timer-slow" class="bonus-timer" style="display: none;">
+                        <div class="slow"></div>
+                        <div class="progress-bar"><div id="bar-slow" class="progress-fill"></div></div>
+                    </div>
+                    <div id="timer-paddle" class="bonus-timer" style="display: none;">
+                        <div class="paddle"></div>
+                        <div class="progress-bar"><div id="bar-paddle" class="progress-fill"></div></div>
+                    </div>
+                </div>
+                <div id="bricks"></div>
+                <div id="start-msg">
+                    <span>PRESS SPACE</span>
+                </div>
+                <div class="pad" id="paddle">
+                    <div class="pad-left"></div>
+                    <div class="pad-center"></div>
+                    <div class="pad-right"></div>
+                </div>
+                <div class="over"></div>
+            </div>
+        </div>
+        <div id="gameover-overlay">
+            <div id="gameover-box">
+                <p>GAME OVER</p>
+                <div id="final-score"></div>
+                <button id="restart-btn">RETRY</button>
+                <button onclick="window.location.href='home.html'" class="btn-start">BACK TO MENU</button>
+            </div>
+        </div>
+        <div id="pause-overlay">
+            <div id="pause-box">
+                <p>PAUSE</p>
+                <button id="resume-btn">CONTINUE</button>
+                <button id="pause-restart-btn">RESTART</button>
+                <button onclick="window.location.href='home.html'" class="btn-start">BACK TO MENU</button>
+            </div>
+        </div>
+        <div id="levelup-overlay">
+            <div id="levelup-box">
+                <p id="levelup-title">LEVEL 2</p>
+                <button id="levelup-btn">NEXT</button>
+                <button onclick="window.location.href='home.html'" class="btn-start">BACK TO MENU</button>
+            </div>
+        </div>
+        <div id="win-overlay">
+            <div id="win-box">
+                <p>CONGRATULATION</p>
+                <p>🎉YOU WIN<span class="emoji-inverse">🎉</span></p>
+                <div id="final-score"></div>
+                <button id="again-btn">PLAY AGAIN</button>
+                <button onclick="window.location.href='home.html'" class="btn-start">BACK TO MENU</button>
+            </div>
+        </div>
+    </body>
+    <script type="module" src="/STATIC/JS/main.js"></script>
+</html>

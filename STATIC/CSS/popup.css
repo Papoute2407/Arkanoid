@@ -1,0 +1,106 @@
+/* ── Overlay commun ───────────────────────────────────────────────────────────*/
+#gameover-overlay,
+#pause-overlay,
+#levelup-overlay,
+#win-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ── Boîte commune ────────────────────────────────────────────────────────────*/
+#gameover-box,
+#pause-box,
+#levelup-box,
+#win-box{
+    background: rgba(20, 20, 20, 0.95);
+    border: 3px solid #7b2cff;
+    box-shadow: 0 0 25px rgba(123, 44, 255, 0.5);
+    padding: 40px 60px;
+    border-radius: 12px;
+    text-align: center;
+    font-family: 'PIXEL', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: scale(0.8);
+    animation: popIn 0.3s forwards ease-out;
+}
+
+/* ── Titres ───────────────────────────────────────────────────────────────────*/
+#gameover-box p {
+    color: #ff2a2a;
+    font-size: 3rem;
+    margin: 0;
+    text-shadow: 3px 3px 0px #000;
+    letter-spacing: 2px;
+}
+
+#pause-box p,
+#levelup-box p,
+#win-box p{
+    color: #fff;
+    font-size: 3rem;
+    margin: 0;
+    text-shadow: 3px 3px 0px #000;
+    letter-spacing: 4px;
+}
+
+/* ── Boutons communs ──────────────────────────────────────────────────────────*/
+#gameover-box button,
+#pause-box button,
+#levelup-box button,
+#win-box button{
+    font-family: 'PIXEL', sans-serif;
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    background: #7b2cff;
+    color: white;
+    border: 2px solid black;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 0px black;
+    transition: transform 0.1s ease;
+}
+
+#gameover-box button:hover,
+#pause-box button:hover,
+#levelup-box button:hover,
+#win-box button:hover{
+    background: #b46cff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(123, 44, 255, 0.5);
+}
+
+#gameover-box button:active,
+#pause-box button:active,
+#levelup-box button:active,
+#win-box button:active{
+    transform: translateY(2px);
+    box-shadow: 0 2px 0px black;
+}
+
+/* ── Animation d'apparition ──────────────────────────────────────────────────*/
+@keyframes popIn {
+    to { transform: scale(1); }
+}
+
+/* ── Score final ─────────────────────────────────────────────────────────────*/
+#final-score {
+    color: white;
+    font-family: 'PIXEL';
+    padding: 5px;
+    margin: 0;
+}
+
+.emoji-inverse {
+    display: inline-block; 
+    transform: scaleX(-1); 
+}
