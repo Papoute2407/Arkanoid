@@ -2,6 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <title>Arkanoid</title>
         <link rel="stylesheet" href="/STATIC/CSS/game.css">
         <link rel="stylesheet" href="/STATIC/CSS/popup.css">
@@ -14,6 +15,7 @@
             <div id="score">⭐ : 0</div>
             <div id="board">
                 <div id="fps-counter">FPS: 0</div>
+                <button id="pause-btn" aria-label="Pause">⏸</button>
                 <div id="active-bonuses">
                     <div id="timer-slow" class="bonus-timer" style="display: none;">
                         <div class="slow"></div>
@@ -26,7 +28,8 @@
                 </div>
                 <div id="bricks"></div>
                 <div id="start-msg">
-                    <span>PRESS SPACE</span>
+                    <span class="desktop-only">PRESS SPACE</span>
+                    <span class="mobile-only">TAP TO START</span>
                 </div>
                 <div class="pad" id="paddle">
                     <div class="pad-left"></div>

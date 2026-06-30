@@ -13,6 +13,7 @@ const restartBtn      = document.getElementById("restart-btn");
 const pauseRestartBtn = document.getElementById("pause-restart-btn");
 const againBtn        = document.getElementById("again-btn");
 const winOverlay      = document.getElementById("win-overlay");
+const pauseBtn        = document.getElementById("pause-btn"); // bouton pause mobile (optionnel)
 
 // ── État global ───────────────────────────────────────────────────────────────
 let brickElements = [];
@@ -70,12 +71,20 @@ function updateBonusTimers(deltaTimeMs) {
     }
 }
 
-// ── Gestion Échap ─────────────────────────────────────────────────────────────
+// ── Gestion Échap (clavier) ───────────────────────────────────────────────────
 window.addEventListener("keydown", e => {
     if (e.key === "Escape" && !waitingForStart) {
         paused ? resumeGame() : pauseGame();
     }
 });
+
+// ── Gestion pause tactile (bouton mobile) ─────────────────────────────────────
+if (pauseBtn) {
+    pauseBtn.addEventListener("click", () => {
+        if (waitingForStart) return;
+        paused ? resumeGame() : pauseGame();
+    });
+}
 
 function pauseGame() {
     paused = true;
@@ -131,6 +140,30 @@ document.getElementById("levelup-btn").addEventListener("click", () => {
 const keys = { ArrowLeft: false, ArrowRight: false };
 window.addEventListener("keydown", e => { if (e.key in keys) keys[e.key] = true;  });
 window.addEventListener("keyup",   e => { if (e.key in keys) keys[e.key] = false; });
+
+// ── Tactile (mobile) ──────────────────────────────────────────────────────────
+let touchActive = false;
+
+function getPaddleXFromTouch(touchX) {
+    const boardRect = board.getBoundingClientRect();
+    const relativeX = touchX - boardRect.left - (paddle.clientWidth / 2);
+    return Math.max(0, Math.min(board.clientWidth - paddle.clientWidth, relativeX));
+}
+
+board.addEventListener("touchstart", e => {
+    touchActive = true;
+    if (waitingForStart) startGame();
+    paddleX = getPaddleXFromTouch(e.touches[0].clientX);
+    paddle.style.transform = `translate(${paddleX}px, 0px)`;
+}, { passive: true });
+
+board.addEventListener("touchmove", e => {
+    if (!touchActive) return;
+    paddleX = getPaddleXFromTouch(e.touches[0].clientX);
+    paddle.style.transform = `translate(${paddleX}px, 0px)`;
+}, { passive: true });
+
+board.addEventListener("touchend", () => { touchActive = false; }, { passive: true });
 
 // ── Collision générique ───────────────────────────────────────────────────────
 function isCollision(a, b) {
@@ -302,7 +335,8 @@ function gameLoop(timestamp) {
     updateBonusTimers(deltaTime * 16.666);
     updateHUD();
 
-    // Déplacement raquette fluide (indexé sur deltaTime)
+    // Déplacement raquette fluide au clavier (indexé sur deltaTime)
+    // Le tactile écrase directement paddleX via les listeners touchstart/touchmove
     if (keys.ArrowLeft)  paddleX -= PADDLE_SPEED * deltaTime;
     if (keys.ArrowRight) paddleX += PADDLE_SPEED * deltaTime;
     paddleX = Math.max(0, Math.min(board.clientWidth - paddle.clientWidth, paddleX));
@@ -395,19 +429,23 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+// ── Démarrage de partie (clavier Espace + tactile) ────────────────────────────
+function startGame() {
+    if (!waitingForStart) return;
+    waitingForStart = false;
+    try { ambiance.play(); } catch (error) {}
+    startTime = performance.now();
+    elapsedTime = 0;
+    timerRunning = true;
+    lastTimestamp = performance.now();
+    document.getElementById("timer").textContent = "⏱ 00:00";
+    const msg = document.getElementById("start-msg");
+    if (msg) msg.style.display = "none";
+    requestAnimationFrame(gameLoop);
+}
+
 window.addEventListener("keydown", e => {
-    if (e.key === " " && waitingForStart) {
-        waitingForStart = false;
-        try { ambiance.play(); } catch (error) {}
-        startTime = performance.now();
-        elapsedTime = 0;
-        timerRunning = true;
-        lastTimestamp = performance.now();
-        document.getElementById("timer").textContent = "⏱ 00:00";
-        const msg = document.getElementById("start-msg");
-        if (msg) msg.style.display = "none";
-        requestAnimationFrame(gameLoop);
-    }
+    if (e.key === " " && waitingForStart) startGame();
 });
 
 // ── Restarts ───────────────────────────────────────────────────────────────────
@@ -446,7 +484,7 @@ initializeGame();
 resetBalls();
 createMainBall(board, paddleX, paddle.clientWidth);
 
-// On attend l'interaction espace pour lancer la boucle au lieu de la lancer à vide
+// On attend l'interaction espace/tactile pour lancer la boucle au lieu de la lancer à vide
 // Cela évite que le premier calcul de delta soit biaisé pendant le chargement de la page.
 
 
