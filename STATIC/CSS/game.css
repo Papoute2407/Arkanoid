@@ -189,19 +189,30 @@ body {
 /* ══ TRÈS PETIT ÉCRAN (mobile) : le board s'adapte à la hauteur disponible ══ */
 @media (max-width: 600px) {
 
+    body {
+        height: 100dvh; /* tient compte de la barre d'adresse mobile, contrairement à 100vh */
+    }
+
     #wrapper {
-        width: 100%;
+        width: 100vw;
+        height: 100dvh;
         min-width: 0;
         max-width: 100vw;
-        padding: 8px;
+        padding: 6px;
+        gap: 6px;
+        box-sizing: border-box;
+        grid-template-rows: auto 1fr; /* la rangée HUD garde sa taille, le board prend le reste */
+        align-content: center;
+        justify-items: center;
     }
 
     #board {
-        width: 100%;
-        max-width: 500px;
-        height: calc(100vh - 130px);
-        max-height: 780px;
+        /* La largeur est dérivée de la hauteur réellement disponible (100dvh moins HUD/paddings)
+           pour garantir que le board entier (500x780) tienne toujours à l'écran, quel que soit l'appareil. */
+        width: min(100%, calc((100dvh - 70px) * (500 / 780)));
         aspect-ratio: 500 / 780;
+        height: auto;
+        max-height: 100%;
         margin: 0 auto;
     }
 }
