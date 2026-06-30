@@ -34,6 +34,9 @@ body {
     position: relative;
     margin: 0 auto;
     flex-shrink: 0;
+    max-width: 100%; /* empêche tout débordement avant que le JS fixe la largeur exacte */
+    max-height: 100%;
+    overflow: hidden; /* masque le board non-scalé tant que le JS n'a pas appliqué sa taille finale */
 }
 
 #board {
@@ -214,10 +217,6 @@ body {
     #board {
         box-shadow: none;
         border-radius: 0;
-    }
-
-    #board-wrapper {
-        overflow: hidden; /* masque l'éventuel pixel de débordement dû à l'arrondi du scale */
     }
 }
 
