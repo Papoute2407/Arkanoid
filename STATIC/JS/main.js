@@ -14,6 +14,37 @@ const pauseRestartBtn = document.getElementById("pause-restart-btn");
 const againBtn        = document.getElementById("again-btn");
 const winOverlay      = document.getElementById("win-overlay");
 const pauseBtn        = document.getElementById("pause-btn"); // bouton pause mobile (optionnel)
+const boardWrapper    = document.getElementById("board-wrapper");
+
+// ── Mise à l'échelle responsive du board ──────────────────────────────────────
+// Le board garde TOUJOURS sa taille interne fixe (500x780, définie en CSS), donc tous
+// les calculs JS (positions des briques, physique de la balle, board.clientWidth, etc.)
+// restent valables quel que soit l'écran. On ne change que l'affichage visuel via
+// transform: scale(), ce qui ne modifie pas board.clientWidth/clientHeight.
+function fitBoardToScreen() {
+    const boardW = board.offsetWidth;  // 500, lu dynamiquement plutôt que codé en dur
+    const boardH = board.offsetHeight; // 780
+
+    // Espace vertical réellement disponible sous la barre HUD (lives/level/timer/score)
+    const hudBottom = document.getElementById("level").getBoundingClientRect().bottom;
+    const safetyMargin = 8;
+
+    const availableW = window.innerWidth - safetyMargin;
+    const availableH = window.innerHeight - hudBottom - safetyMargin;
+
+    // On ne scale jamais au-delà de 1 (pas d'agrandissement, juste de la réduction si besoin)
+    const scale = Math.min(availableW / boardW, availableH / boardH, 1);
+
+    boardWrapper.style.width  = (boardW * scale) + "px";
+    boardWrapper.style.height = (boardH * scale) + "px";
+    board.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener("resize", fitBoardToScreen);
+window.addEventListener("orientationchange", fitBoardToScreen);
+if (document.fonts) {
+    document.fonts.ready.then(fitBoardToScreen); // re-fit une fois la police pixel chargée (la HUD peut changer légèrement de hauteur)
+}
 
 // ── État global ───────────────────────────────────────────────────────────────
 let brickElements = [];
@@ -483,6 +514,7 @@ againBtn.addEventListener("click", () => {
 initializeGame();
 resetBalls();
 createMainBall(board, paddleX, paddle.clientWidth);
+fitBoardToScreen();
 
 // On attend l'interaction espace/tactile pour lancer la boucle au lieu de la lancer à vide
 // Cela évite que le premier calcul de delta soit biaisé pendant le chargement de la page.

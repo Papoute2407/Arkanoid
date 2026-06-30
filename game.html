@@ -13,30 +13,32 @@
             <div id="level">LEVEL : 1</div>
             <div id="timer">⏱ 00:00</div>
             <div id="score">⭐ : 0</div>
-            <div id="board">
-                <div id="fps-counter">FPS: 0</div>
-                <button id="pause-btn" aria-label="Pause">⏸</button>
-                <div id="active-bonuses">
-                    <div id="timer-slow" class="bonus-timer" style="display: none;">
-                        <div class="slow"></div>
-                        <div class="progress-bar"><div id="bar-slow" class="progress-fill"></div></div>
+            <div id="board-wrapper">
+                <div id="board">
+                    <div id="fps-counter">FPS: 0</div>
+                    <button id="pause-btn" aria-label="Pause">⏸</button>
+                    <div id="active-bonuses">
+                        <div id="timer-slow" class="bonus-timer" style="display: none;">
+                            <div class="slow"></div>
+                            <div class="progress-bar"><div id="bar-slow" class="progress-fill"></div></div>
+                        </div>
+                        <div id="timer-paddle" class="bonus-timer" style="display: none;">
+                            <div class="paddle"></div>
+                            <div class="progress-bar"><div id="bar-paddle" class="progress-fill"></div></div>
+                        </div>
                     </div>
-                    <div id="timer-paddle" class="bonus-timer" style="display: none;">
-                        <div class="paddle"></div>
-                        <div class="progress-bar"><div id="bar-paddle" class="progress-fill"></div></div>
+                    <div id="bricks"></div>
+                    <div id="start-msg">
+                        <span class="desktop-only">PRESS SPACE</span>
+                        <span class="mobile-only">TAP TO START</span>
                     </div>
+                    <div class="pad" id="paddle">
+                        <div class="pad-left"></div>
+                        <div class="pad-center"></div>
+                        <div class="pad-right"></div>
+                    </div>
+                    <div class="over"></div>
                 </div>
-                <div id="bricks"></div>
-                <div id="start-msg">
-                    <span class="desktop-only">PRESS SPACE</span>
-                    <span class="mobile-only">TAP TO START</span>
-                </div>
-                <div class="pad" id="paddle">
-                    <div class="pad-left"></div>
-                    <div class="pad-center"></div>
-                    <div class="pad-right"></div>
-                </div>
-                <div class="over"></div>
             </div>
         </div>
         <div id="gameover-overlay">
