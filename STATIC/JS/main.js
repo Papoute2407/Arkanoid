@@ -15,6 +15,52 @@ const againBtn        = document.getElementById("again-btn");
 const winOverlay      = document.getElementById("win-overlay");
 const pauseBtn        = document.getElementById("pause-btn"); // bouton pause mobile (optionnel)
 
+// ── Ajustement responsive (mobile/tablette) ────────────────────────────────────
+// #board reste TOUJOURS 500x780 en interne (c'est l'espace de coordonnées utilisé
+// par initializeGame(), les briques, la balle, la palette...). On ne redimensionne
+// jamais sa boîte en CSS : on calcule ici un facteur `zoom` à partir de l'espace
+// réellement disponible (mesuré, pas deviné) et on l'applique à #board. `zoom`
+// (contrairement à `transform: scale`) met aussi à jour clientWidth/clientHeight
+// et getBoundingClientRect(), donc toute la logique du jeu qui lit ces valeurs
+// reste cohérente sans aucune autre modification.
+function fitBoardToViewport() {
+    const isMobile = window.innerWidth <= 600; // correspond au breakpoint CSS "mobile"
+
+    if (!isMobile) {
+        // Desktop ET tablette/écran moyen (601-1199px) : taille naturelle, pas de zoom.
+        // Le fit dynamique ne s'applique qu'en dessous de 600px.
+        board.style.zoom = "";
+        return;
+    }
+
+    const wrapperEl = board.parentElement;
+    const hudEl = document.getElementById("level"); // même hauteur que les autres éléments du HUD
+    if (!wrapperEl || !hudEl) return;
+
+    const wrapperStyle = getComputedStyle(wrapperEl);
+    const wrapperRect  = wrapperEl.getBoundingClientRect();
+    const hudRect      = hudEl.getBoundingClientRect();
+
+    const paddingLeft   = parseFloat(wrapperStyle.paddingLeft)   || 0;
+    const paddingRight  = parseFloat(wrapperStyle.paddingRight)  || 0;
+    const paddingTop    = parseFloat(wrapperStyle.paddingTop)    || 0;
+    const paddingBottom = parseFloat(wrapperStyle.paddingBottom) || 0;
+    const rowGap        = parseFloat(wrapperStyle.rowGap)        || 0;
+
+    const availableWidth  = wrapperRect.width  - paddingLeft - paddingRight;
+    const availableHeight = wrapperRect.height - paddingTop - paddingBottom - hudRect.height - rowGap;
+
+    // 500x780 = taille de conception du board. On ne dépasse jamais 1 (pas d'agrandissement).
+    const scale = Math.min(availableWidth / 500, availableHeight / 780, 1);
+    board.style.zoom = scale > 0 ? scale : 1;
+}
+
+window.addEventListener("load", fitBoardToViewport);
+window.addEventListener("resize", () => setTimeout(fitBoardToViewport, 50));
+// iOS met parfois à jour innerWidth/innerHeight avec un léger retard après orientationchange
+window.addEventListener("orientationchange", () => setTimeout(fitBoardToViewport, 150));
+fitBoardToViewport();
+
 // ── État global ───────────────────────────────────────────────────────────────
 let brickElements = [];
 let paddleX       = 200;

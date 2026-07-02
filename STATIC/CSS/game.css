@@ -30,15 +30,6 @@ body {
     text-align: center;
 }
 
-#board-wrapper {
-    position: relative;
-    margin: 0 auto;
-    flex-shrink: 0;
-    max-width: 100%; /* empêche tout débordement avant que le JS fixe la largeur exacte */
-    max-height: 100%;
-    overflow: hidden; /* masque le board non-scalé tant que le JS n'a pas appliqué sa taille finale */
-}
-
 #board {
     background: rgba(0,0,0,0.3);
     border: none;
@@ -49,7 +40,6 @@ body {
     box-shadow: 0px 0px 20px 15px rgb(255, 255, 255);
     flex-shrink: 0;
     touch-action: none; /* empêche le scroll/zoom du navigateur pendant le swipe sur le board */
-    transform-origin: top left; /* ancre du scale JS, doit matcher le coin haut-gauche du wrapper */
 }
 
 /* ══ GRAND ÉCRAN ══ */
@@ -82,7 +72,7 @@ body {
         margin-right: 50px;
     }
 
-    #board-wrapper {
+    #board {
         grid-column: 2;
         grid-row: 2;
     }
@@ -110,15 +100,17 @@ body {
     }
 }
 
-/* ══ PETIT ÉCRAN : barre compacte ══ */
-@media (max-width: 1199px) {
+/* ══ TABLETTE / ÉCRAN MOYEN (601px – 1199px) : barre compacte, board à taille fixe
+   (comme ton design d'origine avant la gestion mobile — pas de fit dynamique ici,
+   volontairement, seulement en dessous de 600px) ══ */
+@media (max-width: 1199px) and (min-width: 601px) {
 
     #wrapper {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-template-rows: auto auto;
-        width: 500px;        
-        max-width: 100vw; 
+        width: 500px;
+        max-width: 100vw;
         margin: 0 auto;
         row-gap: 1px;
         column-gap: 0;
@@ -188,13 +180,16 @@ body {
         height: 30px;
     }
 
-    #board-wrapper {
+    #board {
         grid-column: 1 / 5;
         grid-row: 2;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
-/* ══ TRÈS PETIT ÉCRAN (mobile) : pas de bordure visible, le board doit sembler occuper l'écran ══ */
+/* ══ MOBILE (≤600px) : le board s'adapte réellement à l'écran (largeur ET hauteur)
+   via le facteur `zoom` calculé en JS dans fitBoardToViewport() ══ */
 @media (max-width: 600px) {
 
     body {
@@ -202,21 +197,100 @@ body {
     }
 
     #wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr; /* la rangée HUD garde sa taille, le board prend tout le reste */
         width: 100vw;
         height: 100dvh;
         min-width: 0;
         max-width: 100vw;
-        padding: 4px;
-        gap: 4px;
+        row-gap: 6px;
+        column-gap: 0;
+        padding: 6px;
         box-sizing: border-box;
-        grid-template-rows: auto 1fr;
-        align-content: center;
-        justify-items: center;
+    }
+
+    #lives {
+        grid-column: 1;
+        grid-row: 1;
+        font-size: 1rem;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 6px 1px;
+        margin: 0;
+        border-radius: 10px 0 0 10px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        box-sizing: border-box;
+    }
+
+    #level {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 1rem;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 6px 1px;
+        margin: 0;
+        border-top: 2px solid rgba(255, 255, 255, 0.15);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+        border-left: none;
+        border-right: none;
+        box-sizing: border-box;
+    }
+
+    #timer {
+        grid-column: 3;
+        grid-row: 1;
+        font-size: 1rem;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 6px 1px;
+        margin: 0;
+        border-top: 2px solid rgba(255, 255, 255, 0.15);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        box-sizing: border-box;
+    }
+
+    #score {
+        grid-column: 4;
+        grid-row: 1;
+        font-size: 1rem;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 6px 1px;
+        margin: 0;
+        border-radius: 0 10px 10px 0;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-left: none;
+        box-sizing: border-box;
+    }
+
+    #lives, #score, #level, #timer {
+        height: 30px;
     }
 
     #board {
-        box-shadow: none;
-        border-radius: 0;
+        grid-column: 1 / 5;
+        grid-row: 2;
+        /* #board GARDE sa taille intrinsèque 500x780 (héritée de la règle
+           de base) : c'est l'espace de coordonnées dans lequel les
+           briques/palette/balle sont positionnées en JS. On ne le
+           redimensionne JAMAIS en CSS ici, sinon les briques (placées en
+           pixels absolus fixes dans initializeGame()) débordent de la
+           boîte devenue plus petite qu'elles.
+           À la place, main.js calcule un facteur `zoom` à partir de
+           l'espace réellement disponible et l'applique à #board : `zoom`
+           réduit visuellement TOUT le contenu de façon uniforme (contrairement
+           à `transform`, il met aussi à jour clientWidth/clientHeight/
+           getBoundingClientRect, donc toute la logique du jeu qui lit ces
+           valeurs reste juste automatiquement). Ici on centre juste la boîte. */
+        min-width: 0;
+        min-height: 0;
+        justify-self: center;
+        align-self: center;
     }
 }
 
